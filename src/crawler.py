@@ -1,9 +1,11 @@
 """
     Based on Python 3.7
+    @author Yuexiang LI
 """
 
 import requests
 from bs4 import BeautifulSoup
+import threading
 
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -40,53 +42,17 @@ def get_url():
         word_url.append({"word": word["title"], "url": word["href"]})
     print(word_url)
 
-    """
-    for t in table:
-        word_list = t.find_all("a")
-        print(word_list)
-
-        for word in word_list:
-            print(word)
-            print(word["href"])
-            print(word["title"])
-            word_url.append({"word": word["title"], "url": word["href"]})
-    print(word_url)
-    """
-    # for t in table:
-    #     print("________________")
-    #     print(t)
-    #     word_list = t.find("td").find_all("p")
-    #     print(word_list)
-    #     word_list.pop(0)
-    #     print(word_list)
-    #
-    #     word = []
-    #     for w in word_list:
-    #         print(w)
-    #         word = w.find_all("a")
-    #         print(word)
-    #     print(word)
-    #
-    #     for w in word:
-    #         print(w)
-    #         # 获取属性
-    #         print(w["href"])
-    #         print(w["title"])
-    #         word_url.append({"word": w["title"], "url": w["href"]})
-    #
-    # print(word_url)
-
     return word_url
 
 
-def get_phonemic_symbol(word_url):
+def get_phonemic_symbol(phonemic_symbols, word_url):
     """
 
     :param word_url:
     :return:
     """
 
-    phonemic_symbols = []
+    # phonemic_symbols = []
 
     url_prefix = "http://www.phonemicchart.com"
 
@@ -114,12 +80,23 @@ def get_phonemic_symbol(word_url):
             # 把单词和对应的音标存起来
             phonemic_symbols.append({"word": w_url["word"], "symbol": symbol})
 
-    return phonemic_symbols
+    # return phonemic_symbols
 
 
 if __name__ == '__main__':
     urls = get_url()
     print(len(urls))
-    symbols = get_phonemic_symbol(urls)
-    print(symbols)
+
+    symbols1 = []
+    symbols2 = []
+    t1 = threading.Thread(target=get_phonemic_symbol, args=[symbols1, urls[:int(len(urls) / 2)]])
+    t2 = threading.Thread(target=get_phonemic_symbol, args=[symbols2, urls[int(len(urls) / 2):]])
+
+    t1.start()
+    t2.start()
+
+    t1.join()
+    t2.join()
+
+    symbols = symbols1 + symbols2
     print(len(symbols))
