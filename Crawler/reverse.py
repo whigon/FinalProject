@@ -5,6 +5,11 @@ from pymysql import *
 
 
 def get_data():
+    """
+    Read data from database
+
+    :return:
+    """
     conn = connect(host='127.0.0.1', port=3306, user='root', password='123456', database='wordmap', charset='utf8')
     cs = conn.cursor()
     cs.execute("SELECT word, number FROM map")
@@ -14,6 +19,13 @@ def get_data():
 
 
 def sort(origin):
+    """
+    Sort by number
+
+    :param origin:
+    :return:
+    """
+    # Convert tuple into list
     origin = list(origin)
     origin.sort(key=lambda x: x[1])
 
@@ -21,8 +33,18 @@ def sort(origin):
 
 
 def build_reverse_index(old_index):
+    """
+    Build reverse index from origin
+
+    :param old_index:
+    :return:
+    """
     new_index = {}
 
+    # Old data must be sorted
+    old_index = sort(old_index)
+
+    # Use the number as index
     index = list(set([x[1] for x in old_index]))
     index.sort()
     print(index)
@@ -36,7 +58,7 @@ def build_reverse_index(old_index):
             new_index[number] = words
             # next
             number = old_index[i][1]
-            # new a reference, words.clear() is invalid
+            # new a reference; words.clear() is invalid
             words = [old_index[i][0]]
         else:
             # collect words
@@ -45,6 +67,7 @@ def build_reverse_index(old_index):
 
     new_index[number] = words
 
+    # Build reverse index, two loops N²，do not need sort
     # for i in index:
     #     words = []
     #     for data in old_index:
@@ -58,6 +81,12 @@ def build_reverse_index(old_index):
 
 
 def save2file(test_dict):
+    """
+    Save inverse index in a Json file
+
+    :param test_dict:
+    :return:
+    """
     json_str = json.dumps(test_dict, indent=4)
     # Get parent dir
     parent = os.path.abspath(os.path.join(os.getcwd(), ".."))
@@ -65,10 +94,13 @@ def save2file(test_dict):
         json_file.write(json_str)
 
 
+'''
 if __name__ == '__main__':
     results = get_data()
-    results = sort(results)
+    print(type(results))
+    # results = sort(results)
     print(results)
 
     new = build_reverse_index(results)
     save2file(new)
+'''

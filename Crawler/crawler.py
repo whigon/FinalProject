@@ -18,6 +18,7 @@ headers = {
 
 def get_url():
     """
+    Get each word's url
     Reference: https://www.jianshu.com/p/f8516eb9913f
 
     :return:
@@ -90,6 +91,7 @@ def get_phonemic_symbol(phonemic_symbols, word_url):
     # return phonemic_symbols
 
 
+'''
 if __name__ == '__main__':
     urls = get_url()
     print(len(urls))
@@ -131,3 +133,4 @@ if __name__ == '__main__':
     cs.close()
     conn.close()
     print('OK')
+'''

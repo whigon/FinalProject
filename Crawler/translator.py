@@ -6,15 +6,26 @@ consonants_map = {"s": 0, "z": 0, "t": 1, "d": 1, "n": 2, "m": 3, "r": 4, "l": 5
 
 
 def covert2digit(consonant):
-    digit = ""
+    """
+    Convert consonants into digits and join them into a number
+    :param consonant:
+    :return:
+    """
+    number = ""
 
     for c in consonant:
-        digit += str(consonants_map[c])
+        number += str(consonants_map[c])
 
-    return digit
+    return number
 
 
 def extract_consonant(phonetic_symbol):
+    """
+    Extract consonants from phonetic symbols
+
+    :param phonetic_symbol:
+    :return:
+    """
     consonant = []
     # print(len(phonetic_symbol))
 
@@ -46,6 +57,7 @@ def extract_consonant(phonetic_symbol):
     return consonant
 
 
+'''
 if __name__ == '__main__':
     print(1)
     digit = covert2digit(extract_consonant("ˌæmbɪˈɡjuːəti"))
@@ -53,3 +65,4 @@ if __name__ == '__main__':
     digit = covert2digit(extract_consonant("/'gri:n/"))
     print(digit)
     print("g")
+'''
