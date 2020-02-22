@@ -1,3 +1,8 @@
+"""
+    Based on Python 3.7
+    @author Yuexiang LI
+"""
+
 # /h/, /j/, /w/: unsigned
 # /ŋ/ could be 2, 27 or 7, to avoid ambiguity, /ŋ/ represents 27
 # g is not ɡ

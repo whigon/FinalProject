@@ -1,3 +1,8 @@
+"""
+    Based on Python 3.7
+    @author Yuexiang LI
+"""
+
 import threading
 from pymysql import *
 from Crawler import translator
