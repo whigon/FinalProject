@@ -3,10 +3,12 @@
     @author Yuexiang LI
 """
 
+import threading
 import requests
 from bs4 import BeautifulSoup
-import threading
 from pymysql import *
+
+from Crawler import translator
 
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -81,6 +83,7 @@ def get_phonemic_symbol(phonemic_symbols, word_url):
             symbol = symbol.get_text()
 
             print(symbol)
+            print(translator.covert2digit(translator.extract_consonant(symbol)))
             # 把单词和对应的音标存起来
             phonemic_symbols.append({"word": w_url["word"], "symbol": symbol})
 
@@ -90,7 +93,6 @@ def get_phonemic_symbol(phonemic_symbols, word_url):
 if __name__ == '__main__':
     urls = get_url()
     print(len(urls))
-
 
     symbols1 = []
     symbols2 = []
@@ -114,13 +116,18 @@ if __name__ == '__main__':
     for s in symbols:
         print(s["word"])
         print(s["symbol"])
-        values.append((s["word"], s["symbol"]))
+        consonant = translator.extract_consonant(s["symbol"])
+        digit = translator.covert2digit(consonant)
+        if digit != "":
+            values.append((s["word"], s["symbol"], digit))
 
-    cs.executemany("insert into map(word, phonemic_symbol) values(%s, %s)", values)
-    conn.commit()  # 提交
+    try:
+        # https://blog.csdn.net/Homewm/article/details/81703218
+        cs.executemany("REPLACE INTO map(word, phonemic_symbol, number) VALUES(%s, %s, %s)", values)
+        conn.commit()  # 提交
+    except Exception as err:
+        print(err)
 
     cs.close()
     conn.close()
     print('OK')
-
-    # TODO: 添加新的单词，怎么避免重复
