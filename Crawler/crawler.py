@@ -3,10 +3,12 @@
     @author Yuexiang LI
 """
 
+import threading
 import requests
 from bs4 import BeautifulSoup
-import threading
 from pymysql import *
+
+from Crawler import translator
 
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -16,6 +18,7 @@ headers = {
 
 def get_url():
     """
+    Get each word's url
     Reference: https://www.jianshu.com/p/f8516eb9913f
 
     :return:
@@ -25,18 +28,17 @@ def get_url():
 
     url = "http://www.phonemicchart.com/transcribe/1000_basic_words.html"
 
-    # 利用requests对象的get方法，对指定的url发起请求
-    # 该方法会返回一个Response对象
+    # Request a specific url by using get method, and it will return a Response object
     res = requests.get(url, headers=headers)
 
     if res.status_code != 200:
         print("Fail to request word list page!")
         return
 
-    # 通过Response对象的text方法获取网页的文本信息
+    # Obtain text from Response object
     soup = BeautifulSoup(res.text, "lxml")
 
-    # 找出名为main的div标签下的所有单词的超链接标签
+    # Find the tag, containing the hyperlink for the word, under the div tag named 'main'
     # class 'bs4.element.Tag'
     word_list = soup.find("div", class_="main").find_all("a")
     # Deduplicate
@@ -51,7 +53,9 @@ def get_url():
 
 def get_phonemic_symbol(phonemic_symbols, word_url):
     """
+    Extract phonemic symbols and store them
 
+    :param phonemic_symbols: Store the phonemic symbol
     :param word_url:
     :return:
     """
@@ -68,29 +72,32 @@ def get_phonemic_symbol(phonemic_symbols, word_url):
 
         if res.status_code != 200:
             print("Fail to request phonemic symbol page: " + url)
+            continue
             # return
 
         soup = BeautifulSoup(res.text, "lxml")
 
-        # 获取音标
+        # Find the phonemic symbol
         # print(soup)
         symbol = soup.find("span", class_="H4")
 
-        # anytime没有音标
+        # Some words may not have the phonemic symbol in this website, e.g. anytime
         if symbol:
             symbol = symbol.get_text()
 
-            print(symbol)
-            # 把单词和对应的音标存起来
+            # Store the phonemic symbol with corresponding word
             phonemic_symbols.append({"word": w_url["word"], "symbol": symbol})
+            
+            print(symbol)
+            # print(translator.covert2digit(translator.extract_consonant(symbol)))
 
     # return phonemic_symbols
 
 
+'''
 if __name__ == '__main__':
     urls = get_url()
     print(len(urls))
-
 
     symbols1 = []
     symbols2 = []
@@ -114,13 +121,19 @@ if __name__ == '__main__':
     for s in symbols:
         print(s["word"])
         print(s["symbol"])
-        values.append((s["word"], s["symbol"]))
+        consonant = translator.extract_consonant(s["symbol"])
+        digit = translator.covert2digit(consonant)
+        if digit != "":
+            values.append((s["word"], s["symbol"], digit))
 
-    cs.executemany("insert into map(word, phonemic_symbol) values(%s, %s)", values)
-    conn.commit()  # 提交
+    try:
+        # https://blog.csdn.net/Homewm/article/details/81703218
+        cs.executemany("REPLACE INTO map(word, phonemic_symbol, number) VALUES(%s, %s, %s)", values)
+        conn.commit()  # 提交
+    except Exception as err:
+        print(err)
 
     cs.close()
     conn.close()
     print('OK')
-
-    # TODO: 添加新的单词，怎么避免重复
+'''
