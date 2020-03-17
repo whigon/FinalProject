@@ -26,7 +26,8 @@ def get_url():
 
     word_url = []
 
-    url = "http://www.phonemicchart.com/transcribe/1000_basic_words.html"
+    # url = "http://www.phonemicchart.com/transcribe/1000_basic_words.html"
+    url = "http://www.phonemicchart.com/transcribe/biglist.html"
 
     # Request a specific url by using get method, and it will return a Response object
     res = requests.get(url, headers=headers)
@@ -44,8 +45,10 @@ def get_url():
     # Deduplicate
     word_list = list(set(word_list))
 
+    print(word_list)
+
     for word in word_list:
-        word_url.append({"word": word["title"], "url": word["href"]})
+        word_url.append({"word": word.get_text(), "url": word["href"]})
     print(word_url)
 
     return word_url
@@ -78,7 +81,6 @@ def get_phonetic_symbol(phonetic_symbols, word_url):
         soup = BeautifulSoup(res.text, "lxml")
 
         # Find the phonetic symbol
-        # print(soup)
         symbol = soup.find("span", class_="H4")
 
         # Some words may not have the phonetic symbol in this website, e.g. anytime
@@ -87,7 +89,7 @@ def get_phonetic_symbol(phonetic_symbols, word_url):
 
             # Store the phonetic symbol with corresponding word
             phonetic_symbols.append({"word": w_url["word"], "symbol": symbol})
-            
+
             print(symbol)
             # print(translator.covert2digit(translator.extract_consonant(symbol)))
 
@@ -97,10 +99,11 @@ def get_phonetic_symbol(phonetic_symbols, word_url):
 if __name__ == '__main__':
     urls = get_url()
     print(len(urls))
+    urls = urls[:20]
+    print(len(urls))
 
     symbols1 = []
     symbols2 = []
-
     t1 = threading.Thread(target=get_phonetic_symbol, args=[symbols1, urls[:int(len(urls) / 2)]])
     t2 = threading.Thread(target=get_phonetic_symbol, args=[symbols2, urls[int(len(urls) / 2):]])
 
