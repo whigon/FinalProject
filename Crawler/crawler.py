@@ -8,7 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 from pymysql import *
 
-from Crawler import translator
+import translator
 
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -51,16 +51,16 @@ def get_url():
     return word_url
 
 
-def get_phonemic_symbol(phonemic_symbols, word_url):
+def get_phonetic_symbol(phonetic_symbols, word_url):
     """
-    Extract phonemic symbols and store them
+    Extract phonetic symbols and store them
 
-    :param phonemic_symbols: Store the phonemic symbol
+    :param phonetic_symbols: Store the phonetic symbol
     :param word_url:
     :return:
     """
 
-    # phonemic_symbols = []
+    # phonetic_symbols = []
 
     url_prefix = "http://www.phonemicchart.com"
 
@@ -71,38 +71,38 @@ def get_phonemic_symbol(phonemic_symbols, word_url):
         res = requests.get(url, headers=headers)
 
         if res.status_code != 200:
-            print("Fail to request phonemic symbol page: " + url)
+            print("Fail to request phonetic symbol page: " + url)
             continue
             # return
 
         soup = BeautifulSoup(res.text, "lxml")
 
-        # Find the phonemic symbol
+        # Find the phonetic symbol
         # print(soup)
         symbol = soup.find("span", class_="H4")
 
-        # Some words may not have the phonemic symbol in this website, e.g. anytime
+        # Some words may not have the phonetic symbol in this website, e.g. anytime
         if symbol:
             symbol = symbol.get_text()
 
-            # Store the phonemic symbol with corresponding word
-            phonemic_symbols.append({"word": w_url["word"], "symbol": symbol})
+            # Store the phonetic symbol with corresponding word
+            phonetic_symbols.append({"word": w_url["word"], "symbol": symbol})
             
             print(symbol)
             # print(translator.covert2digit(translator.extract_consonant(symbol)))
 
-    # return phonemic_symbols
+    # return phonetic_symbols
 
 
-'''
+
 if __name__ == '__main__':
     urls = get_url()
     print(len(urls))
 
     symbols1 = []
     symbols2 = []
-    t1 = threading.Thread(target=get_phonemic_symbol, args=[symbols1, urls[:int(len(urls) / 2)]])
-    t2 = threading.Thread(target=get_phonemic_symbol, args=[symbols2, urls[int(len(urls) / 2):]])
+    t1 = threading.Thread(target=get_phonetic_symbol, args=[symbols1, urls[:int(len(urls) / 2)]])
+    t2 = threading.Thread(target=get_phonetic_symbol, args=[symbols2, urls[int(len(urls) / 2):]])
 
     t1.start()
     t2.start()
@@ -136,4 +136,3 @@ if __name__ == '__main__':
     cs.close()
     conn.close()
     print('OK')
-'''
