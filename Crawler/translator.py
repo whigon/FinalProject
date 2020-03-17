@@ -69,5 +69,8 @@ if __name__ == '__main__':
     print(digit)
     digit = covert2digit(extract_consonant("/'gri:n/"))
     print(digit)
+
+    digit = covert2digit(extract_consonant("pensl"))
+    print(digit)
     print("g")
 '''
