@@ -99,7 +99,7 @@ def get_phonetic_symbol(phonetic_symbols, word_url):
 if __name__ == '__main__':
     urls = get_url()
     print(len(urls))
-    urls = urls[:20]
+    urls = urls[:5000]
     print(len(urls))
 
     symbols1 = []
