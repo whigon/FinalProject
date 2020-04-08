@@ -72,4 +72,5 @@ if __name__ == '__main__':
 
     digit = covert2digit(extract_consonant("pensl"))
     print(digit)
+    print("g")
 '''

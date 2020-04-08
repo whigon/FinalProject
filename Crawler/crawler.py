@@ -94,13 +94,13 @@ def get_phonetic_symbol(phonetic_symbols, word_url):
     # return phonetic_symbols
 
 
+
 if __name__ == '__main__':
     urls = get_url()
     print(len(urls))
 
     symbols1 = []
     symbols2 = []
-
     t1 = threading.Thread(target=get_phonetic_symbol, args=[symbols1, urls[:int(len(urls) / 2)]])
     t2 = threading.Thread(target=get_phonetic_symbol, args=[symbols2, urls[int(len(urls) / 2):]])
 

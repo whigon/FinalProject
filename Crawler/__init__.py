@@ -5,23 +5,22 @@
 
 import threading
 from pymysql import *
-
 import translator
-import crawler
+import crawler1
 import reverse
-
 
 if __name__ == '__main__':
     # Get each word's url
-    urls = crawler.get_url()
+    urls = crawler1.get_url()
     print(len(urls))
+    # urls = urls[:5000]
+    # print(len(urls))
 
     symbols1 = []
     symbols2 = []
-
     # Get phonetic symbols from urls
-    t1 = threading.Thread(target=crawler.get_phonetic_symbol, args=[symbols1, urls[:int(len(urls) / 2)]])
-    t2 = threading.Thread(target=crawler.get_phonetic_symbol, args=[symbols2, urls[int(len(urls) / 2):]])
+    t1 = threading.Thread(target=crawler1.get_phonetic_symbol, args=[symbols1, urls[:int(len(urls) / 2)]])
+    t2 = threading.Thread(target=crawler1.get_phonetic_symbol, args=[symbols2, urls[int(len(urls) / 2):]])
 
     t1.start()
     t2.start()
@@ -40,7 +39,6 @@ if __name__ == '__main__':
     for s in symbols:
         print(s["word"])
         print(s["symbol"])
-
         # Extract consonant from phonetic symbol
         consonant = translator.extract_consonant(s["symbol"])
         # Convert consonant into digit
