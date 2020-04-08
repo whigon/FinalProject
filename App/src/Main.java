@@ -1,5 +1,4 @@
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.BufferedReader;
@@ -16,7 +15,7 @@ public class Main {
     // This array is used to store the numbers that are split from a digit
     private ArrayList<String> numbers;
     // This array is used to store words corresponding to the number
-    private ArrayList<JSONArray> words;
+    private ArrayList<ArrayList<String>> words;
 
     /**
      * Constructor: load the data file.
@@ -29,16 +28,14 @@ public class Main {
      * Translate digits into a set of words.
      *
      * @param digits input
-     * @return a set of words
      */
-    public String translate(String digits) {
+    public void translate(String digits) {
         // New a space
         numbers = new ArrayList<>();
         words = new ArrayList<>();
-
+        // Remove space and dot
+        digits = digits.replaceAll("[\\s.]", "");
         splitNumber(digits);
-
-        return getResult();
     }
 
     /**
@@ -47,13 +44,13 @@ public class Main {
      * @return a set of words
      */
     public String getResult() {
-        String str = " ";
+        StringBuilder str = new StringBuilder(" ");
 
-        for (int i = 0; i < words.size(); i++) {
-            str += randomlyPick(words.get(i)) + " ";
+        for (ArrayList<String> word : words) {
+            str.append(randomlyPick(word)).append(" ");
         }
 
-        return str;
+        return str.toString();
     }
 
     /**
@@ -66,7 +63,7 @@ public class Main {
         String subNumber;
 
         if (length != 0) {
-            // Check from the longest substring
+            // Check from the longest substring that can match the item in the key set
             for (int i = length; i > 0; i--) {
                 subNumber = input.substring(0, i);
 
@@ -74,7 +71,8 @@ public class Main {
                     // Store split-number
                     numbers.add(subNumber);
                     // Store corresponding words
-                    words.add((JSONArray) (map.get(subNumber)));
+                    ArrayList<String> word = (ArrayList<String>) JSONObject.parseArray(map.get(subNumber).toString(), String.class);
+                    words.add(word);
                     // Find next
                     splitNumber(input.substring(i));
 
@@ -92,12 +90,10 @@ public class Main {
      * @param array A set of words that can represent a number
      * @return A randomly-picked word
      */
-    public String randomlyPick(JSONArray array) {
+    private String randomlyPick(ArrayList<String> array) {
         int random = (int) (Math.random() * array.size());
-//        System.out.println(array);
-//        System.out.println(random);
 
-        return array.getString(random);
+        return array.get(random);
     }
 
     /**
@@ -123,9 +119,9 @@ public class Main {
     /**
      * Return the set of words that can be used to represented numbers
      *
-     * @return A set of JsonArray which contains the words
+     * @return An array which contains the words
      */
-    public ArrayList<JSONArray> getWords() {
+    public ArrayList<ArrayList<String>> getWords() {
         return words;
     }
 
@@ -142,14 +138,14 @@ public class Main {
             // Read from file
             BufferedReader reader = new BufferedReader(new FileReader(new File(parent + "/Resources/test_data.json")));
 
-            String data = "";
+            StringBuilder data = new StringBuilder();
             String str;
             while ((str = reader.readLine()) != null) {
-                data += str;
+                data.append(str);
             }
 
             // Store the map
-            map = (JSONObject) JSON.parse(data);
+            map = (JSONObject) JSON.parse(data.toString());
             // Store the key set
             keySet = map.keySet();
         } catch (Exception e) {
