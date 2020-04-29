@@ -14,10 +14,10 @@ public class Test {
             System.out.println("The split number is: " + m.getNumbers().toString());
             System.out.println("The word list is: " +  m.getWords().toString());
             ArrayList<ArrayList<String>> wordSet = m.getWords();
-            System.out.println(wordSet.size());
+//            System.out.println(wordSet.size());
             System.out.println();
-            System.out.println(wordSet.get(0).getClass());
-            System.out.println(wordSet.get(0));
+//            System.out.println(wordSet.get(0).getClass());
+//            System.out.println(wordSet.get(0));
             System.out.println("Get result once: " + result);
             String r1 = m.getResult();
             System.out.println("Get result again: " + r1);
